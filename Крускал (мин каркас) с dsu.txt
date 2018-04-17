@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+
+const long long NMAX = 1e5 + 5, INF = 1e10;
+
+#define f first
+#define s second
+#define mp make_pair
+
+vector <int> dsu, tree_size;
+vector < pair<int, pii> > a; // (вес; (вершина; вершина) )
+int n, m;
+
+int dsu_find(int v){
+    if(dsu[v] == v) return v;
+    return dsu[v] = dsu_find(dsu[v]);
+}
+
+bool dsu_union(int x, int y){
+    x = dsu_find(x);
+    y = dsu_find(y);
+
+    if(x != y) {
+        if(tree_size[x] < tree_size[y]) swap(x, y);
+        tree_size[x] += tree_size[y];
+        return dsu[y] = x, true;
+    }
+    return false;
+}
+
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    cin >> n >> m;
+    for(int i = 0; i < m; ++i){
+        int x, y, w;
+        cin >> x >> y >> w;
+        a.push_back(mp(w, mp(x, y)));
+    }
+
+    dsu.resize(n + 1);
+    tree_size.resize(n + 1);
+    for(int i = 1; i <= n; ++i){
+        dsu[i] = i;
+        tree_size[i] = 1;
+    }
+
+    sort(a.begin(), a.end());
+
+    long long answer = 0;
+    for(int i = 0; i < m; ++i)
+        if(dsu_union(a[i].s.f, a[i].s.s)) answer += a[i].f;
+
+    cout << answer;
+}

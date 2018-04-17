@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+
+const ll NMAX = 1e5 + 5, INF = 1e9 + 9;
+
+#define f first
+#define s second
+#define mp make_pair
+
+vector<pii> a[20005];
+vector<int> answer;
+
+int tin[20005], fup[20005], timer = 0;
+bool used[20005];
+
+void dfs(int v, int p)
+{
+    used[v] = true;
+    tin[v] = fup[v] = ++timer;
+
+    for(pii edge : a[v])
+    {
+        int to = edge.f;
+
+        if(to == p) continue;
+        if(used[to]) fup[v] = min(fup[v], tin[to]); // нашли обратное ребро (ведет в вершину с меньшим временем захода)
+        else {
+            dfs(to, v);
+            fup[v] = min(fup[v], fup[to]); // проверяем было ли обратное ребро у сына
+        }
+
+        if(fup[to] > tin[v]) answer.push_back(edge.s);
+    }
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int n, m;
+    cin >> n >> m;
+
+    for(int i = 1; i <= m; ++i) {
+        int x, y;
+        cin >> x >> y;
+        a[x].push_back(mp(y, i));
+        a[y].push_back(mp(x, i));
+    }
+
+    for(int i = 1; i <= n; ++i) if(!used[i]) dfs(i, i);
+
+    sort(answer.begin(), answer.end());
+    cout << answer.size() << "\n";
+    for(int num : answer) cout << num << " ";
+}

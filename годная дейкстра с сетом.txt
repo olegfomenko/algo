@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+const long long NMAX = 1e5 + 5, INF = 1e10;
+#define f first
+#define s second
+#define mp make_pair
+
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n, m, s, f, x, y, w;
+    cin >> n >> m >> s >> f;
+
+    vector <pii> a[n + 1];
+
+    for(int i = 0; i < m; ++i){
+        cin >> x >> y >> w;
+        a[x].push_back(mp(y, w));
+        a[y].push_back(mp(x, w));
+    }
+
+    set <pll> q;
+    q.insert(mp(0, s));
+
+    vector <ll> answer(n + 1, INF);
+    answer[s] = 0;
+
+    int p[n + 1];
+    p[s] = s;
+
+    while(!q.empty()){
+        int v = q.begin() -> s;
+        q.erase(q.begin());
+
+        for(int i = 0; i < a[v].size(); ++i) {
+            int to = a[v][i].f;
+            int new_ans = answer[v] + a[v][i].s;
+
+            if(answer[to] > new_ans) {
+                q.erase(mp(answer[to], to));
+                answer[to] = new_ans;
+                q.insert(mp(answer[to], to));
+                p[to] = v;
+            }
+        }
+    }
+
+    if(answer[f] == INF) return cout << -1, 0;
+    cout << answer[f] << "\n";
+
+    vector<int> ans;
+    while(true) {
+        ans.push_back(f);
+        if(f == p[f]) break;
+        f = p[f];
+    }
+    for(int i = ans.size() - 1; i >= 0; --i) cout << ans[i] << " ";
+}

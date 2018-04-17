@@ -1,0 +1,56 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define x first
+#define y second
+using namespace std;
+
+bool cmp(pair <int, int> p1, pair <int, int> p2)
+{
+    return (p1.x > p2.x) || (p1. x == p2.x && p1.y > p2.y);
+}
+
+int function_(pair <int, int> p1, pair <int, int> p2, pair <int, int> p3) //косое произведение вектоорв p1p2 и векторв p1p3
+{
+    return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y);
+}
+int main()
+{
+    pair <int, int> a[100000], p1, p2;
+    int n;
+    cin >> n;
+    for(int i = 0; i < n; ++i)
+        cin >> a[i].first >> a[i].second;
+
+    sort(a, a + n, cmp);
+    p1 = a[0];
+    p2 = a[n - 1];
+
+    vector < pair <int, int> > up, down, answer;
+    up.push_back(p1);
+    down.push_back(p1);
+
+    for(int i = 1; i < n; ++i)
+    {
+        if(i == n - 1 || function_(p1, p2, a[i]) > 0)
+        {
+            while(up.size() >= 2 && function_(up[up.size() - 2], up[up.size() - 1], a[i]) > 0)
+                up.pop_back();
+            up.push_back(a[i]);
+        }
+        if(i == n - 1 || function_(p1, p2, a[i]) < 0)
+        {
+            while(down.size() >= 2 && function_(down[down.size() - 2], down[down.size() - 1], a[i]) < 0)
+                down.pop_back();
+            down.push_back(a[i]);
+        }
+    }
+    for(int i = 0; i < up.size(); ++i)
+        answer.push_back(up[i]);
+    for(int i = down.size() - 2; i > 0; --i) //точки p1 и p2 лежат в двух массивах
+        answer.push_back(down[i]);
+
+    cout << answer.size() << "\n";
+    for(int i = 0; i < answer.size(); ++i)
+        cout << answer[i].x << " " << answer[i].y << "\n";
+}
